@@ -1,0 +1,78 @@
+
+modules
+    main loop
+        loads data
+        updates
+        state machine?
+    user obj
+        buying power
+        open positions
+        email
+    stock obj
+        ticker
+        hostorical data
+        news sources
+    trade obj
+        ticker
+        position
+        profit
+    update
+        updates user, trade obj, etc
+    news
+        scrapes/analyzes news sites, twitter, etc
+    notify
+        email notifications
+    calculate
+        calcs indicators
+        model for ml
+    monitor
+        watches flagged stocks
+        flags interesting stocks
+    trade
+        buy/sell api
+    test
+        historical data
+    db
+        ?
+
+
+
+
+---------------------------------------------------------------------------
+
+gets historical stock data to train/test with
+
+communicate via email
+    reply to ok trades
+    add new ticker
+    ...?
+
+focuses on certain tickers?
+    learns new tickers?
+    user adds a ticker
+
+looks at twitter, reddit, etc 
+    list of news sources for each ticker
+    looks up new tickers if sees company on reddit?
+
+notifies if stock will go up, down
+
+makes trades 'automatically' for testing
+
+uses as many indicators as possible (weak predictor from this)
+    reverse macd
+    volume
+    local high, low
+    historical high, low
+    resistance
+    etc
+
+given cost for trade
+    predict future gains
+    if not greater by margin than cost of trade
+    dont trade
+
+    predict next high, low
+
+output:
+

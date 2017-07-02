@@ -1,11 +1,11 @@
 
-SRC = Prog.java
+SRC = $(addprefix src/, Main.java BackTest.java Util.java)
 OBJ = ${SRC:.java=.class}
-MNF = manifest.mf
 
 CC = javac
 JAR = jar cvfm
-EXE = prog.jar
+MNF = manifest.mf
+EXE = $(addprefix bin/, prog.jar)
 
 all : ${EXE}
 
@@ -15,7 +15,7 @@ ${EXE} : ${OBJ} ${MNF}
 
 ${MNF} : ${SRC}
 	echo "Manifest-version: 1.0" > ${MNF}
-	echo "Main-Class: Prog" >> ${MNF}
+	echo "Main-Class: src.Main" >> ${MNF}
 	echo "" >> ${MNF}
 
 ${OBJ} : ${SRC}
@@ -24,6 +24,6 @@ ${OBJ} : ${SRC}
 clean :
 	-rm -rf ${OBJ} ${MNF} ${EXE}
 
-test :
+test : ${EXE}
 	java -jar ${EXE}
 

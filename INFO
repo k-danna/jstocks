@@ -25,6 +25,7 @@ modules
     calculate
         calcs indicators
         model for ml
+            learns weights for each indicator
     monitor
         watches flagged stocks
         flags interesting stocks

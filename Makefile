@@ -1,17 +1,20 @@
 
-SRC = $(addprefix src/, Main.java BackTest.java Util.java)
-OBJ = ${SRC:.java=.class}
+SDIR = src/
+BDIR = bin/
+
+SRC = $(addprefix ${SDIR}, Main.java BackTest.java Monitor.java Indicator.java Data.java)
+#OBJ = ${SRC:.java=.class}
+OBJ = $(addprefix ${SDIR}, *.class)
 
 CC = javac
 JAR = jar cvfm
 MNF = manifest.mf
-EXE = $(addprefix bin/, prog.jar)
+EXE = $(addprefix ${BDIR}, prog.jar)
 
 all : ${EXE}
 
 ${EXE} : ${OBJ} ${MNF}
 	${JAR} ${EXE} ${MNF} ${OBJ}
-	-rm -rf ${OBJ} ${MNF}
 
 ${MNF} : ${SRC}
 	echo "Manifest-version: 1.0" > ${MNF}

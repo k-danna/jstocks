@@ -5,28 +5,49 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-//import src.BackTest;
-
 public class Main {
 
-    static BackTest backtest = new BackTest();
-    //static Predict predictor = new Predict();
 
-    public static void main(String args[]) {
-        //create user
+    static User getUser() {
+        //query db and return new user obj
+        
+        //or
+        //create new user table
+        //insert data into table
+
+        //DEBUG: create user for testing
         String name = "testuser";
         double cash = 10000.00;
         double cost = 7.00;
-        double flex = 0.1;
         double risk = 0.3;
         double conf = 0.7;
         double prof = 100.00;
-        User user = new User(name, cost, cash, cash, flex, risk, 
+        double flex = 0.1;
+        return new User(name, cost, cash, cash, flex, risk, 
                 conf, prof);
+    }
+
+    public static void main(String args[]) {
+
+        //get the user state from db or create new
+        User user = getUser();
+
+        //take any commands (add money, change params, etc)
 
         //test on historical data
-        List<String> tickers = Arrays.asList("AAPl", "FNB", "NEE", "NFLX");
-        backtest.test(user, tickers);
+        //List<String> tickers = Arrays.asList("AAPl","FNB", "NEE", "NFLX");
+        List<String> tickers = Arrays.asList("NFLX");
+
+        //DEBUG: this is for backtest testing
+        LoadData loader = new LoadData();
+        loader.update(tickers);
+
+        //test with historical data
+        Analyze analyzer = new Analyze();
+        analyzer.backtest(user, tickers);
+
+        //plot specified calculations and price data for a ticker
+        //Visualize visualizer = new Visualize("NFLX");
 
     }
 }

@@ -13,18 +13,21 @@ public class LoadData {
     }
 
     public void update(List<String> tickers) {
-        //FIXME: update all tickers to current day
         for (String ticker : tickers) {
             load_csv("data/" + ticker + ".csv", ticker);
         }
     }
 
     public void update(String ticker) {
-        //FIXME: update ticker to current day
         load_csv("data/" + ticker + ".csv", ticker);
     }
 
     public void load_csv(String path, String ticker) {
+        //FIXME: update ticker to current day
+            //download from yahoo finance
+            //add the missing days to the db
+            //DO NOT RE-ADD ALL DATA
+
         Database db = new Database(); //connect to or create db
         try {
 

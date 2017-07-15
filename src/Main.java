@@ -35,16 +35,21 @@ public class Main {
         //take any commands (add money, change params, etc)
 
         //test on historical data
+        //FIXME: multiple tickers fail --> multiple sells/buys
         //List<String> tickers = Arrays.asList("AAPl","FNB", "NEE", "NFLX");
         List<String> tickers = Arrays.asList("NFLX");
 
         //DEBUG: this is for backtest testing
+            //should auto update in feed
         LoadData loader = new LoadData();
         loader.update(tickers);
 
         //test with historical data
         Analyze analyzer = new Analyze();
         analyzer.backtest(user, tickers);
+
+        //output some info
+        user.printStats();
 
         //plot specified calculations and price data for a ticker
         //Visualize visualizer = new Visualize("NFLX");

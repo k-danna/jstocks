@@ -87,7 +87,7 @@ public class Calculate {
 
     //http://edmond.mires.co/GES816/25-Reversing%20MACD.pdf
     double[] reverseMACD() {
-        //FIXME: plot 9 day ema also
+        //FIXME: plot 9 day ema of macd
             //signal to buy
                 //macd crosses up over the 9ema
             //signal to sell
@@ -102,20 +102,20 @@ public class Calculate {
                 //macd above zero
 
         //calc 12, 24, 9 day emas
-        double w9 = 2 / (1 + 9.0);
+        //double w9 = 2 / (1 + 9.0);
         double w12 = 2 / (1 + 12.0);
         double w24 = 2 / (1 + 24.0);
-        double ema9 = ema(this.today, w9);
+        //double ema9 = ema(this.today, w9);
         double ema12 = ema(this.today, w12);
         double ema24 = ema(this.today, w24);
 
         double macd = ema12 - ema24;
         double pred = (ema12 * w12 - ema24 * w24) / (w12 - w24);
+        double prev = macd;
 
         //DEBUG: verify prediction works
-            //FIXME:
-                //2015-7-15 - 600% error
         if (this.today.prev != null) {
+            prev = ema(this.today.prev, w12) - ema(this.today.prev, w24);
             double today = this.today.adjclose;
             double yesterday = this.today.prev.adjclose;
 
@@ -146,58 +146,11 @@ public class Calculate {
             }
         }
 
-        double[] rtn = {this.today.adjclose, macd, 0.0, 0.0, 0.0};
+        //return: macd, macdpred, prevmacd, macdslope
+        double[] rtn = {macd, pred, prev};
 
         /*
-        if (this.rs == null) {
-            System.out.println("no result set: " + this.id);
-            return null;
-        }
-        double price = -1;
         try {
-            double fast = 12.0;
-            double slow = 24.0;
-            double period = 1.0;
-            double emafast = -1;
-            double emaslow = -1;
-            double emafprev = -1;
-            double emasprev = -1;
-            while (this.rs.next()) {
-                double open = this.rs.getDouble("open");
-                double high = this.rs.getDouble("high");
-                double low = this.rs.getDouble("low");
-                double close = this.rs.getDouble("close");
-                int adjclose = this.rs.getInt("adjclose");
-
-                price = (open + close + high + low) / 4;
-                double weight = 2.0 / (1 + period);
-                if (period > fast) {
-                    //calc emafast
-                    emafast = weight * price + (1 - weight) * emafast;
-                }
-                else {
-                    emafast = price;
-                }
-                if (period == 1.0) emaslow = price;
-                else {
-                    //calc emaslow
-                    emaslow = weight * price + (1 - weight) * emaslow;
-                }
-                if (period != slow) emafprev = emafast;
-                if (period != slow) emasprev = emaslow;
-                ++period;
-            }
-            double macd = emafast - emaslow;
-            double fweight = 2.0 / (1 + fast);
-            double sweight = 2.0 / (1 + slow);
-            //FIXME: predict next price
-            double macdpred = (macd + (1 - sweight) * emafprev
-                    - (1 - fweight) * emasprev) / (fweight - sweight);
-
-            //System.out.println("    " + macd + "|" + emafast 
-            //        + "|" + emaslow + "|\n    " + macdpred 
-            //        + " --- " + price + "\n    " + (price - macdpred));
-            
             //insert in db
             this.db.update("update " + this.ticker + " set "
                     + "avg=" + price
@@ -209,13 +162,10 @@ public class Calculate {
 
             //close connection
             this.db.disconnect();
-
-            double[] rtn = {price, macd, emafast, emaslow, macdpred};
-            return rtn;
-
         }
         catch (SQLException e) { return null; }
         */
+
         return rtn;
     }
 

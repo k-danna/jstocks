@@ -20,6 +20,11 @@ public class User {
     double minConfidence;
     double minProfit;
 
+    //stats
+    double startWorth;
+    int goodTrades;
+    int numTrades;
+
     public User(String name, double tradeCost, double buyingPower,
             double netWorth, double flex, double maxRisk, 
             double minConfidence, double minProfit) {
@@ -31,6 +36,10 @@ public class User {
         this.maxRisk = maxRisk;
         this.minConfidence = minConfidence;
         this.minProfit = minProfit;
+
+        this.startWorth = buyingPower;
+        this.goodTrades = 0;
+        this.numTrades = 0;
     }
 
     public void notify(Trade trade) {
@@ -53,17 +62,17 @@ public class User {
             openPositions.add(trade);
 
             //debug
-            System.out.println("[*] bought " + trade.numShares
-                    + " at " + trade.sharePrice + " for "
-                    + trade.totalCost + " cost");
+            //System.out.println("[*] bought " + trade.ticker + " "
+            //        + trade.numShares
+            //        + " at " + trade.sharePrice); //+ " for "
+            //        //+ trade.totalCost + " cost");
         }
         else {
-            //sell
+            //close the trade
             Iterator<Trade> iter = openPositions.iterator();
             while (iter.hasNext()) {
                 Trade open = iter.next();
                 if (open.ticker == trade.ticker) {
-                    //close the trade
                     double sold = open.numShares * trade.sharePrice;
                     double profit = open.numShares * trade.sharePrice 
                             - open.numShares * open.sharePrice;
@@ -76,16 +85,35 @@ public class User {
 
                     //remove from list
                     iter.remove();
-                    //openPositions.remove(iter.next());
                     
+                    if (profit > 0) ++this.goodTrades;
+                    ++this.numTrades;
+
                     //debug
                     String sym = (profit > 0) ? "+" : "-";
-                    System.out.println("[" + sym + "] sold " 
-                            + open.numShares + " at " + trade.sharePrice 
-                            + " for " + profit + " profit");
+                    //System.out.println("[" + sym + "] sold " 
+                    //        + trade.ticker + " "
+                    //        + open.numShares + " at " + trade.sharePrice 
+                    //        + " for " + profit + " profit");
+                    System.out.println("[" + sym + "] " 
+                            + trade.ticker + " " + profit);
                 }
             }
         }
+    }
+
+    public void printStats() {
+        double profit = this.netWorth - this.startWorth;
+        double roi = (profit / this.startWorth) * 100;
+        double tradePercent = ((double)this.goodTrades / this.numTrades) 
+                * 100;
+        System.out.println("\nstart networth: " + this.startWorth
+                + "\nend networth: " + this.netWorth
+                + "\ntotal profit: " + profit
+                + "\nreturn on investment: " + roi + "%"
+                + "\ngood trades: " + this.goodTrades + "/"
+                + this.numTrades 
+                + "\nsuccess: " + tradePercent + "%");
     }
 
 }

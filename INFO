@@ -1,13 +1,13 @@
 
-next task
-    setup sqlite db
+next task priority
+    update sqlite db in feed
     visualize module
-    visualize(ticker, timestep, timestart, indicators)
 
 **important
     need to be able to run prog and it will update to current day
     ie havent run in a week, needs to get data, update db, predict
 
+---------------------------------------------------------------------------
 
 modules
     main loop

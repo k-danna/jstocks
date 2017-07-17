@@ -43,21 +43,23 @@ public class Analyze {
         //LoadData loader = new LoadData(); //connect to db
         //loader.update();
 
-        //FIXME:
-            //update user networth with current stock prices
-            //enforce stoploss
-
-        //calc all indicators for the day
-            //inserts calculations into db
+        //get data
         Calculate calc = new Calculate(year, month, day, ticker);
         if (calc.dne() || calc.today.prev == null) return;
 
         double price = calc.today.adjclose;
         //double prevprice = calc.today.prev.adjclose;
-
         //System.out.println(ticker + ": " + year + "-" 
         //        + month + "-" + day);
 
+        //FIXME:
+            //update user networth with current stock prices
+        
+        //enforce stoploss if needed
+        user.takeloss(ticker, price);
+
+        //calc all indicators for the day
+            //inserts calculations into db
         double[] macd_info = calc.reverseMACD();
         double macd = macd_info[0];
         double macdpred = macd_info[1];
@@ -89,39 +91,42 @@ public class Analyze {
         //if it meets criteria
             //notify user of good trade
         //double diff = macdpred - price;
-        double nshares = Math.floor((user.buyingPower * user.maxRisk) 
+
+        //max investment
+        double shares = Math.floor((user.buyingPower * user.maxRisk) 
                 / price);
-        if (nshares < 1.0) nshares = 0.0;
+
+        //how sure is the prediction
+        double confidence = 0.0;
 
         //macd crossover indicator
-        if (macd < 0 && macdprev > 0 && nshares != 0) {
-            //invest 10% of total 
-            double stoploss = price - 1;
-            double totalCost = price * nshares;
-            double expProfit = macdpred * nshares - price * nshares;
-            double maxLoss = price * nshares - stoploss * nshares;
-            double riskReward = 0.0;
-            double confidence = 0.0;
-            Trade trade = new Trade(ticker, "BUY", nshares, price, 
-                    stoploss, totalCost, expProfit, maxLoss, 
-                    riskReward, confidence);
-            //user.notify(trade);
-            user.execute(trade);
+        if (macd < 0 && macdprev > 0) {
+            //create buy trade
+            Trade trade = new Trade(ticker, "BUY", shares, price, 
+                    macdpred, confidence);
+
+            //enforce user limits
+            if (user.likesTrade(trade)) {
+                //user.notify(trade);
+                System.out.println("\nBUY  " + ticker + " (" 
+                        + calc.today.date + ") " + shares
+                        + "@" + calc.today.adjclose);
+                user.execute(trade);
+            }
         }
-        else if (macd > 0 && macdprev < 0 && nshares != 0 
-                && user.openPositions.size() > 0) {
-            //sell current position
-            double stoploss = price - 1;
-            double totalCost = price * nshares;
-            double expProfit = macdpred * nshares - price * nshares;
-            double maxLoss = price * nshares - stoploss * nshares;
-            double riskReward = 0.0;
-            double confidence = 0.0;
-            Trade trade = new Trade(ticker, "SELL", nshares, price, 
-                    stoploss, totalCost, expProfit, maxLoss, 
-                    riskReward, confidence);
-            //user.notify(trade);
-            user.execute(trade);
+        else if (macd > 0 && macdprev < 0) {
+            //create sell trade (no shorting, only sells open positions)
+            Trade trade = new Trade(ticker, "SELL", shares, price, 
+                    macdpred, confidence);
+            
+            //enforce user limite
+            if (user.likesTrade(trade)) {
+                //user.notify(trade);
+                System.out.println("SELL " + ticker + " (" 
+                        + calc.today.date + ") " + "  @" 
+                        + calc.today.adjclose);
+                user.execute(trade);
+            }
         }
 
     }

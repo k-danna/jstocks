@@ -47,17 +47,23 @@ public class User {
         System.out.println(trade.notifyString());
     }
 
-   public void execute(Trade trade) {
-        if (trade.position == "BUY") {
-            //invest
-            double buyingPower;
-            double netWorth;
+    public boolean likesTrade(Trade trade) {
+        //enforce user preferences for trade
+        //risk, not enough cash, etc
+        if (trade.shares < 1.0) return false;
+        return true;
+    }
 
-            this.buyingPower -= trade.totalCost;
+    public void takeloss(String ticker, double price) {
+
+    }
+
+    void buy(Trade trade) {
+            this.buyingPower -= trade.cost;
 
             //cost of trade
-            this.buyingPower -= tradeCost;
-            this.netWorth -= tradeCost;
+            this.buyingPower -= this.tradeCost;
+            this.netWorth -= this.tradeCost;
             //add object to open trades list
             openPositions.add(trade);
 
@@ -66,39 +72,58 @@ public class User {
             //        + trade.numShares
             //        + " at " + trade.sharePrice); //+ " for "
             //        //+ trade.totalCost + " cost");
-        }
-        else {
-            //close the trade
-            Iterator<Trade> iter = openPositions.iterator();
-            while (iter.hasNext()) {
-                Trade open = iter.next();
-                if (open.ticker == trade.ticker) {
-                    double sold = open.numShares * trade.sharePrice;
-                    double profit = open.numShares * trade.sharePrice 
-                            - open.numShares * open.sharePrice;
-                    this.buyingPower += sold;
-                    this.netWorth += profit;
-                    
-                    //cost of trade
-                    this.buyingPower -= tradeCost;
-                    this.netWorth -= tradeCost;
+    }
 
-                    //remove from list
-                    iter.remove();
-                    
-                    if (profit > 0) ++this.goodTrades;
-                    ++this.numTrades;
+    void sell(Trade trade) {
+        //no short selling, only closing positions
+        //close the trade
+        Iterator<Trade> iter = openPositions.iterator();
+        while (iter.hasNext()) {
+            Trade open = iter.next();
+            if (open.ticker == trade.ticker) {
+                double gain = open.shares * trade.entry;
+                double profit = gain - open.cost;
+                
+                //gains
+                this.buyingPower += gain;
+                this.netWorth += profit;
+                
+                //cost of trade
+                this.buyingPower -= tradeCost;
+                this.netWorth -= tradeCost;
 
-                    //debug
-                    String sym = (profit > 0) ? "+" : "-";
-                    //System.out.println("[" + sym + "] sold " 
-                    //        + trade.ticker + " "
-                    //        + open.numShares + " at " + trade.sharePrice 
-                    //        + " for " + profit + " profit");
-                    System.out.println("[" + sym + "] " 
-                            + trade.ticker + " " + profit);
-                }
+                //remove from list
+                iter.remove();
+                
+                if (profit > 0) ++this.goodTrades;
+                ++this.numTrades;
+
+                //debug
+                String sym = (profit > 0) ? "+" : "-";
+                //System.out.println("[" + sym + "] gain " 
+                //        + trade.ticker + " "
+                //        + open.numShares + " at " + trade.sharePrice 
+                //        + " for " + profit + " profit");
+                System.out.println("[" + sym + "] " 
+                        + trade.ticker + " " + profit);
             }
+        }
+    }
+
+    public void execute(Trade trade) {
+        //DEBUG
+        //System.out.println(trade.notifyString());
+
+        switch (trade.action) {
+            case "BUY":     
+                this.buy(trade);
+                break;
+            case "SELL":
+                this.sell(trade);
+                break;
+            default:
+                System.out.println("[-] unknown action");
+                //System.exit(1);
         }
     }
 

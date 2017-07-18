@@ -11,8 +11,10 @@ public class Analyze {
     }
 
     void backtest(User user, List<String> tickers) {
-        //FIXME: days dont line up for multiple tickers
-            //yes they do?
+        //FIXME: train correct weights
+            //backtest over and over
+            //slightly alter weights
+            //repeat until max roi is found
 
         for (int year = 2002; year <= 2017; ++year) 
             for (int month = 0; month <= 12; ++month) 
@@ -22,6 +24,7 @@ public class Analyze {
     }
 
     void feed(User user, String ticker, int year, int month, int day) {
+        String date = year + "-" + month + "-" + day;
         //FIXME:
             //goal (this can also be incorporated into alternate)
                 //calc all indicators each day
@@ -54,9 +57,10 @@ public class Analyze {
 
         //FIXME:
             //update user networth with current stock prices
+            //add bollinger bands indicator
         
         //enforce stoploss if needed
-        user.takeloss(ticker, price);
+        user.takeloss(ticker, price, date);
 
         //calc all indicators for the day
             //inserts calculations into db
@@ -64,6 +68,27 @@ public class Analyze {
         double macd = macd_info[0];
         double macdpred = macd_info[1];
         double macdprev = macd_info[2];
+        double macdsignal = macd_info[3];
+
+        //evaluate the stock based on indicators
+        double up = 0.0;
+        double down = 0.0;
+
+        //macd zero crossover indicator
+        if (macd < 0 && macdprev > 0) ++up;
+        else if (macd > 0 && macdprev < 0) ++down;
+
+        //macd zero line trend indicator
+        if (macd < 0) ++up;
+        else if (macd > 0) ++down;
+
+        //macd rises dramatically (overbought indicator)
+        if (macd / macdprev > 0) ++up;
+        else if (macd / macdprev < 0) ++down;
+
+        //macd signal (9ema) crossover indicator
+        if (macd < macdsignal && macdprev > macdsignal) ++up;
+        else if (macd > macdsignal && macdprev < macdsignal) ++down;
 
         //up
             //macd crosses up over 9ema
@@ -84,23 +109,17 @@ public class Analyze {
                 //distribution over the timeframe instead of set value?
 
         //read news
-        
-        //predict
-        //design optimal trade
-            //apply user info
-        //if it meets criteria
-            //notify user of good trade
-        //double diff = macdpred - price;
 
         //max investment
         double shares = Math.floor((user.buyingPower * user.maxRisk) 
                 / price);
 
-        //how sure is the prediction
-        double confidence = 0.0;
-
-        //macd crossover indicator
-        if (macd < 0 && macdprev > 0) {
+        //make the trade if it meets user criteria
+        double confidence = (up - down) / (up + down);
+        double threshold = 0.3;
+        //System.out.println(calc.today.date + " " + up + "/" 
+        //        + down + ": " + confidence);
+        if (confidence > threshold) {
             //create buy trade
             Trade trade = new Trade(ticker, "BUY", shares, price, 
                     macdpred, confidence);
@@ -108,13 +127,10 @@ public class Analyze {
             //enforce user limits
             if (user.likesTrade(trade)) {
                 //user.notify(trade);
-                System.out.println("\nBUY  " + ticker + " (" 
-                        + calc.today.date + ") " + shares
-                        + "@" + calc.today.adjclose);
-                user.execute(trade);
+                user.execute(trade, date);
             }
         }
-        else if (macd > 0 && macdprev < 0) {
+        if (confidence < -threshold) {
             //create sell trade (no shorting, only sells open positions)
             Trade trade = new Trade(ticker, "SELL", shares, price, 
                     macdpred, confidence);
@@ -122,10 +138,7 @@ public class Analyze {
             //enforce user limite
             if (user.likesTrade(trade)) {
                 //user.notify(trade);
-                System.out.println("SELL " + ticker + " (" 
-                        + calc.today.date + ") " + "  @" 
-                        + calc.today.adjclose);
-                user.execute(trade);
+                user.execute(trade, date);
             }
         }
 

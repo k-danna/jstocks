@@ -102,7 +102,6 @@ public class Calculate {
                 //macd above zero
 
         //calc 12, 24, 9 day emas
-        //double w9 = 2 / (1 + 9.0);
         double w12 = 2 / (1 + 12.0);
         double w24 = 2 / (1 + 24.0);
         //double ema9 = ema(this.today, w9);
@@ -112,6 +111,22 @@ public class Calculate {
         double macd = ema12 - ema24;
         double pred = (ema12 * w12 - ema24 * w24) / (w12 - w24);
         double prev = macd;
+
+        //FIXME: calc this
+        //9 day ema of macd
+        double w9 = 2 / (1 + 9.0);
+        Day temp = this.today;
+        double[] macdarr = {0,0,0,0,0,0,0,0,0};
+        for (int i = 0; i < 9; ++i) {
+            if (temp.prev == null) break;
+            macdarr[i] = ema(temp, w12) - ema(temp, w24);
+            temp = temp.prev;
+        }
+        double signal = macdarr[macdarr.length - 1];
+        for (int i = macdarr.length - 1; i >= 0; --i) {
+            signal = signal * (1 - w9) + macdarr[i] * w9;
+        }
+        //return day.close * weight + ema(day.prev, weight) * (1 - weight);
 
         //DEBUG: verify prediction works
         if (this.today.prev != null) {
@@ -147,7 +162,7 @@ public class Calculate {
         }
 
         //return: macd, macdpred, prevmacd, macdslope
-        double[] rtn = {macd, pred, prev};
+        double[] rtn = {macd, pred, prev, signal};
 
         /*
         try {

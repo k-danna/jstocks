@@ -36,13 +36,16 @@ public class Main {
 
         //test on historical data
         //FIXME: multiple tickers fail --> multiple sells/buys
-        //List<String> tickers = Arrays.asList("AAPl","FNB", "NEE", "NFLX");
-        List<String> tickers = Arrays.asList("NFLX");
+        List<String> tickers = Arrays.asList("AAPl","NFLX", "NEE", "FNB");
+        //List<String> tickers = Arrays.asList("NFLX");
+        //List<String> tickers = Arrays.asList("AAPL");
+        //List<String> tickers = Arrays.asList("FNB");
+        //List<String> tickers = Arrays.asList("NEE");
 
         //DEBUG: this is for backtest testing
             //should auto update in feed
-        LoadData loader = new LoadData();
-        loader.update(tickers);
+        //LoadData loader = new LoadData();
+        //loader.update(tickers);
 
         //test with historical data
         Analyze analyzer = new Analyze();

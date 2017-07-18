@@ -34,7 +34,7 @@ public class Trade {
         this.action = action;
         this.shares = shares;
         this.entry = entry;
-        this.stoploss = entry - 1;
+        this.stoploss = 0.0;
         this.cost = shares * entry;
         this.maxloss = (entry - this.stoploss) * shares;
         this.profit = (exit - entry) * shares;

@@ -42,20 +42,22 @@ public class Main {
         //List<String> tickers = Arrays.asList("FNB");
         //List<String> tickers = Arrays.asList("NEE");
 
-        //DEBUG: this is for backtest testing
+        //DEBUG:
             //should auto update in feed
         //LoadData loader = new LoadData();
         //loader.update(tickers);
 
         //test with historical data
-        Analyze analyzer = new Analyze();
-        analyzer.backtest(user, tickers);
+        //Analyze analyzer = new Analyze();
+        //analyzer.backtest(user, tickers);
 
         //output some info
         user.printStats();
 
         //plot specified calculations and price data for a ticker
-        //Visualize visualizer = new Visualize("NFLX");
+        Visualize visualizer = new Visualize("NFLX");
+        visualizer.add("adjclose");
+        visualizer.render();
 
     }
 }

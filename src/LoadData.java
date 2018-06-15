@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.sql.ResultSet;
 
+//get realtime quotes and historical data via yahoo finance api
+//http://www.jarloo.com/yahoo_finance/
+
 public class LoadData {
 
     public LoadData() {

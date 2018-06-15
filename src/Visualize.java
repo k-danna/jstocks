@@ -5,35 +5,44 @@ package src;
 //import java.util.ArrayList;
 //import java.util.Collections;
 
+//https://stackoverflow.com/questions/18789343/draw-a-multiple-plot-with-jfreechart-bar-xy
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.jfree.chart.JFreeChart;
+
 public class Visualize {
 
-    ResultSet rs;
+    String ticker;
 
     public Visualize(String ticker) {
-        System.out.println(ticker);
+        System.out.println("[*] visualizing: " + ticker);
+        this.ticker = ticker;
+        //create blank graph object
+    }
+
+    void add(String col) {
+        System.out.println("[*] adding: " + col);
 
         //query the data
         Database db = new Database();
-        this.rs = db.query("select * from " + ticker);
-
+        ResultSet rs = db.query("select " + col + " from " + this.ticker);
         try {
             while (rs.next()) {
                 //get all fields
-
-                //store in better format (arraylist?)
+                //add to dataset
             }
         } 
         catch (SQLException e) { return; }
 
         db.disconnect();
 
+        //add to graph
     }
 
-    void plot(double[][] lines) {
-        //plot specified lines
+    void render() {
+        //render the graph
     }
 
 }

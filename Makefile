@@ -9,7 +9,8 @@ OBJ = $(addprefix ${SDIR}, *.class)
 
 CC = javac
 JAR = jar cvfm
-LIB = -classpath ".:lib/sqlite-jdbc-3.19.3.jar"
+RLIB = -classpath ".:lib/sqlite-jdbc-3.19.3.jar"
+LIB = -classpath ".:lib/jfreechart-1.0.19.jar:lib/jcommon-1.0.23.jar"
 MNF = manifest.mf
 EXE = $(addprefix ${BDIR}, prog.jar)
 
@@ -24,11 +25,11 @@ ${MNF} : ${SRC}
 	echo "" >> ${MNF}
 
 ${OBJ} : ${SRC}
-	${CC} ${SRC}
+	${CC} ${LIB} ${SRC}
 
 clean :
 	-rm -rf ${OBJ} ${MNF} ${EXE}
 
 test : ${EXE}
-	java ${LIB} src.Main
+	java ${RLIB} src.Main
 

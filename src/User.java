@@ -212,7 +212,8 @@ public class User {
                 + "\navg2 profit: " + profit / this.numTrades
                 + "\ngood trades: " + this.goodTrades + "/"
                 + this.numTrades 
-                + "\nsuccess: " + tradePercent + "%");
+                + "\nsuccess: " + tradePercent + "%"
+                + "\n");
     }
 
 }
